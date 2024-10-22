@@ -35,7 +35,11 @@ M.open_terminal = function(args)
 
 	M.win_id = api.nvim_open_win(buffer, true, config)
 	api.nvim_set_option_value("winhl", "FloatBorder:NormalFloat", { win = M.win_id })
-	fn.termopen(args or vim.o.shell)
+	if args == "" or args == nil then
+		fn.termopen(vim.o.shell)
+	else
+		fn.termopen(args or vim.o.shell)
+	end
 	cmd.startinsert()
 end
 
