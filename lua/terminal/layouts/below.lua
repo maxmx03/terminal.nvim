@@ -7,7 +7,6 @@ local M = {}
 
 M.open_terminal = function(args)
 	if state.win_id and api.nvim_win_is_valid(state.win_id) then
-		M.close_terminal()
 		return
 	end
 
