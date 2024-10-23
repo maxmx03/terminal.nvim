@@ -1,5 +1,7 @@
 # Terminal
 
+![20241023_00h52m53s_grim](https://github.com/user-attachments/assets/4d9e9a72-7107-42a6-b4a2-18798c8d1946)
+
 ## Installation
 
 ```lua
