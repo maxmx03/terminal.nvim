@@ -7,8 +7,21 @@
     'maxmx03/terminal.nvim',
     opts = {
         layout = 'float' -- below
+        size = 0.7 -- value between 0 and 1, 0.7 == 70%
     },
 }
+```
+
+```vim
+Plug 'maxmx03/terminal.nvim'
+
+lua << EOF
+local terminal = require('terminal')
+terminal.setup({
+    layout = 'float',
+    size = 0.7
+})
+EOF
 ```
 
 ## Commands and Keymaps
