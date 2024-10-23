@@ -5,7 +5,9 @@
 ```lua
 {
     'maxmx03/terminal.nvim',
-    opts = {},
+    opts = {
+        layout = 'float' -- below
+    },
 }
 ```
 

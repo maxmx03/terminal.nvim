@@ -1,13 +1,12 @@
+local state = require("terminal.state")
 local api = vim.api
 local fn = vim.fn
 local cmd = vim.cmd
 
 local M = {}
 
-M.win_id = nil
-
 M.open_terminal = function(args)
-	if M.win_id and api.nvim_win_is_valid(M.win_id) then
+	if state.win_id and api.nvim_win_is_valid(state.win_id) then
 		M.close_terminal()
 		return
 	end
@@ -33,7 +32,7 @@ M.open_terminal = function(args)
 		style = "minimal",
 	}
 
-	M.win_id = api.nvim_open_win(buffer, true, config)
+	state.win_id = api.nvim_open_win(buffer, true, config)
 	api.nvim_set_option_value("winhl", "FloatBorder:NormalFloat", { win = M.win_id })
 	if args == "" or args == nil then
 		fn.termopen(vim.o.shell)
@@ -42,22 +41,5 @@ M.open_terminal = function(args)
 	end
 	cmd.startinsert()
 end
-
-M.close_terminal = function()
-	if M.win_id and api.nvim_win_is_valid(M.win_id) then
-		api.nvim_win_close(M.win_id, true)
-		M.win_id = nil
-	end
-end
-
-M.setup = function() end
-
-api.nvim_create_user_command("TermOpen", function(args)
-	M.open_terminal(args.args)
-end, { nargs = "?", bang = false })
-
-api.nvim_create_user_command("TermClose", function()
-	M.close_terminal()
-end, { nargs = 0, bang = false })
 
 return M
