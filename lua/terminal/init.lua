@@ -1,5 +1,6 @@
 local float = require("terminal.layouts.float")
 local below = require("terminal.layouts.below")
+local state = require("terminal.state")
 local api = vim.api
 local cmd = vim.cmd
 local fn = vim.fn
@@ -10,8 +11,6 @@ M.config = {
 	layout = "float",
 	size = nil,
 }
-
-M.win_id = nil
 
 M.setup = function(opts)
 	M.config = vim.tbl_deep_extend("force", M.config, opts or {})
@@ -24,12 +23,9 @@ local function is_empty(value)
 end
 
 M.open_terminal = function(args)
-	if M.win_id and api.nvim_win_is_valid(M.win_id) then
-		M.close_terminal()
-		return
+	if not state.buffer then
+		state.buffer = api.nvim_create_buf(false, true)
 	end
-
-	local buffer = api.nvim_create_buf(false, true)
 	local layout = M.config.layout
 	local size = M.config.size
 	local config = {}
@@ -62,8 +58,29 @@ M.open_terminal = function(args)
 		end
 	end
 
-	M.win_id = api.nvim_open_win(buffer, true, config)
-	api.nvim_set_option_value("winhl", "FloatBorder:NormalFloat", { win = M.win_id })
+	if state.is_hidden then
+		state.win_id = api.nvim_open_win(state.buffer, true, config)
+		api.nvim_set_option_value("winhl", "FloatBorder:NormalFloat", { win = state.win_id })
+		cmd.startinsert()
+		state.is_hidden = false
+	end
+
+	if state.win_id and api.nvim_win_is_valid(state.win_id) then
+		api.nvim_set_current_win(state.win_id)
+		cmd.startinsert()
+		return
+	end
+
+	local ok, id = pcall(api.nvim_open_win, state.buffer, true, config)
+
+	if not ok then
+		state.buffer = api.nvim_create_buf(false, true)
+		state.win_id = api.nvim_open_win(state.buffer, true, config)
+	else
+		state.win_id = id
+	end
+
+	api.nvim_set_option_value("winhl", "FloatBorder:NormalFloat", { win = state.win_id })
 	if args == "" or args == nil then
 		fn.termopen(vim.o.shell)
 	else
@@ -73,9 +90,17 @@ M.open_terminal = function(args)
 end
 
 M.close_terminal = function()
-	if M.win_id and api.nvim_win_is_valid(M.win_id) then
-		api.nvim_win_close(M.win_id, true)
-		M.win_id = nil
+	if state.win_id and api.nvim_win_is_valid(state.win_id) then
+		api.nvim_win_close(state.win_id, true)
+		state.win_id = nil
+		state.buffer = nil
+	end
+end
+
+M.hide_terminal = function()
+	if state.win_id and api.nvim_win_is_valid(state.win_id) then
+		state.win_id = api.nvim_win_hide(state.win_id)
+		state.is_hidden = true
 	end
 end
 

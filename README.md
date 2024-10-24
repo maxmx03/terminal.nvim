@@ -35,6 +35,9 @@ map("n", "<f3>", "<cmd>TermOpen<cr>", { silent = true })
 -- Close terminal in terminal mode with F3
 map("t", "<f3>", "<cmd>TermClose<cr>", { silent = true })
 
+-- Hide terminal in terminal mode with F3
+map("t", "<f3>", "<cmd>TermHide<cr>", { silent = true })
+
 -- Open terminal and run a specific command (e.g., `make`) with F4
 map("n", "<f4>", "<cmd>TermOpen make<cr>", { silent = true })
 
