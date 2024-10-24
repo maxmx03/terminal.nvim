@@ -8,3 +8,7 @@ end, { nargs = "?", bang = false })
 api.nvim_create_user_command("TermClose", function()
 	terminal.close_terminal()
 end, { nargs = 0, bang = false })
+
+api.nvim_create_user_command("TermHide", function()
+	terminal.hide_terminal()
+end, { nargs = 0, bang = false })
