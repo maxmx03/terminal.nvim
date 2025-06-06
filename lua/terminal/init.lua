@@ -82,9 +82,9 @@ M.open_terminal = function(args)
 
 	api.nvim_set_option_value("winhl", "FloatBorder:NormalFloat", { win = state.win_id })
 	if args == "" or args == nil then
-		fn.termopen(vim.o.shell)
+		state.job_id = fn.jobstart(vim.o.shell, { term = true })
 	else
-		fn.termopen(args or vim.o.shell)
+		state.job_id = fn.jobstart(args or vim.o.shell, { term = true })
 	end
 	cmd.startinsert()
 end
@@ -92,8 +92,11 @@ end
 M.close_terminal = function()
 	if state.win_id and api.nvim_win_is_valid(state.win_id) then
 		api.nvim_win_close(state.win_id, true)
+		api.nvim_buf_delete(state.buffer, { force = true })
+		fn.jobstop(state.job_id)
 		state.win_id = nil
 		state.buffer = nil
+		state.job_id = nil
 	end
 end
 
